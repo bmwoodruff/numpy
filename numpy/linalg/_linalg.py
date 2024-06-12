@@ -885,17 +885,18 @@ def outer(x1, x2, /):
     >>> b = np.array([4, 5, 6])
     >>> np.linalg.outer(a, b)
     array([[ 4,  5,  6],
-        [ 8, 10, 12],
-        [12, 15, 18]])
+           [ 8, 10, 12],
+           [12, 15, 18]])
 
     Outer product with negative numbers:
 
     >>> a = np.array([-1, 2, 3])
     >>> b = np.array([4, -5, 6])
     >>> np.linalg.outer(a, b)
-    array([[ -4,   5,  6],
-        [  8, -10,  12],
-        [ 12, -15,  18]])    
+    array([[ -4,   5,  -6],
+           [  8, -10,  12],
+           [ 12, -15,  18]])
+
     """
     x1 = asanyarray(x1)
     x2 = asanyarray(x2)
