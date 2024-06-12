@@ -876,6 +876,26 @@ def outer(x1, x2, /):
     --------
     outer
 
+    Examples
+    --------
+
+    Simple outer product:
+
+    >>> a = np.array([1, 2, 3])
+    >>> b = np.array([4, 5, 6])
+    >>> np.linalg.outer(a, b)
+    array([[ 4,  5,  6],
+        [ 8, 10, 12],
+        [12, 15, 18]])
+
+    Outer product with negative numbers:
+
+    >>> a = np.array([-1, 2, 3])
+    >>> b = np.array([4, -5, 6])
+    >>> np.linalg.outer(a, b)
+    array([[ -4,   5,  6],
+        [  8, -10,  12],
+        [ 12, -15,  18]])    
     """
     x1 = asanyarray(x1)
     x2 = asanyarray(x2)
@@ -1436,6 +1456,15 @@ def eig(a):
     array([[1., 0.],
            [0., 1.]])
 
+    Matrix with repeated eigenvalues.
+
+    >>> eigenvalues, eigenvectors = np.linalg.eig(np.array([[2, 1], [1, 1]]))
+    >>> eigenvalues
+    array([2., 1.])
+    >>> eigenvectors
+    array([[0.70710678, 0.70710678],
+        [0.70710678, -0.70710678]])
+           
     """
     a, wrap = _makearray(a)
     _assert_stacked_2d(a)
@@ -1755,6 +1784,28 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
     >>> np.allclose(b, np.matmul(U, S[..., None] * Vh))
     True
 
+    Using hermitian flag:
+
+    >>> a = rng.normal(size=(9, 9)) + 1j*rng.normal(size=(9, 9))
+    >>> U, S, Vh = np.linalg.svd(a, hermitian=True)
+    >>> U.shape, S.shape, Vh.shape
+    ((9, 9), (9,), (9, 9))
+    >>> np.allclose(a, np.dot(U, np.dot(np.diag(S), Vh))
+    True
+
+    Using hermitian flag:
+
+    >>> a = rng.normal(size=(9, 9)) + 1j*rng.normal(size=(9, 9))
+    >>> U, S, Vh = np.linalg.svd(a, hermitian=True)
+    >>> U.shape, S.shape, Vh.shape
+    ((9, 9), (9,), (9, 9))
+    >>> np.allclose(a, np.dot(U[:, :9] * S, Vh))
+    True
+    >>> smat = np.zeros((9, 9), dtype=complex)
+    >>> smat[:9, :9] = np.diag(S)
+    >>> np.allclose(a, np.dot(U, np.dot(smat, Vh)))
+    True
+    
     """
     import numpy as _nx
     a, wrap = _makearray(a)
@@ -1852,6 +1903,29 @@ def svdvals(x, /):
     --------
     scipy.linalg.svdvals : Compute singular values of a matrix.
 
+    Examples
+    --------
+    Single matrix singular values:
+
+    >>> x = np.random.rand(3, 3)
+    >>> s = np.linalg.svdvals(x)
+    >>> s.shape
+    (3,)
+
+    Multiple matrix singular values:
+
+    >>> x = np.random.rand(2, 3, 3)
+    >>> s = np.linalg.svdvals(x)
+    >>> s.shape
+    (2, 3)
+
+    Real matrix singular values:
+
+    >>> x = np.array([[1, 0, 0], [0, 2, 0], [0, 0, 3]])
+    >>> s = np.linalg.svdvals(x)
+    >>> s
+    array([3., 2., 1.])
+    
     """
     return svd(x, compute_uv=False, hermitian=False)
 
@@ -2082,6 +2156,13 @@ def matrix_rank(A, tol=None, hermitian=False, *, rtol=None):
     1
     >>> matrix_rank(np.zeros((4,)))
     0
+    
+    Matrix with complex numbers:
+    
+    >>> A = np.array([[1+1j, 2+2j], [3+3j, 4+4j]])
+    >>> matrix_rank(A)
+    2
+
     """
     if rtol is not None and tol is not None:
         raise ValueError("`tol` and `rtol` can't be both set.")
@@ -2369,6 +2450,12 @@ def det(a):
     >>> np.linalg.det(a)
     array([-2., -3., -8.])
 
+    Zero determinant for a singular matrix:
+
+    >>> a = np.array([[1, 0], [0, 0]])
+    >>> np.linalg.det(a)
+    0.0 # may vary
+    
     """
     a = asarray(a)
     _assert_stacked_2d(a)
@@ -2906,6 +2993,15 @@ def multi_dot(arrays, *, out=None):
     >>> # or
     >>> _ = A.dot(B).dot(C).dot(D)
 
+    Using multi_dot with 1-D arrays:
+
+    >>> a = np.random.random((10,))
+    >>> b = np.random.random((10,))
+    >>> c = np.random.random((10,))
+    >>> d = np.random.random((10,))
+    >>>
+    >>> _ = multi_dot([a, b, c, d])
+
     Notes
     -----
     The cost for a matrix multiplication can be calculated with the
@@ -3126,6 +3222,32 @@ def trace(x, /, *, offset=0, dtype=None):
     --------
     numpy.trace
 
+    Examples
+    --------
+    Computing the main diagonal trace:
+
+    >>> x = np.array([[1, 2], [3, 4]])
+    >>> np.linalg.trace(x)
+    5
+
+    Computing the trace of a stack of matrices:
+
+    >>> x = np.array([[[1, 2], [3, 4]], [[5, 6], [7, 8]]])
+    >>> np.linalg.trace(x)
+    array([5, 13])
+
+    Computing the trace of a 3D array:
+
+    >>> x = np.array([[[[1, 2], [3, 4]], [[5, 6], [7, 8]]], [[[9, 10], [11, 12]], [[13, 14], [15, 16]]]])
+    >>> np.linalg.trace(x)
+    array([[ 5, 13], [29, 41]])
+
+    Computing the trace with a specific data type:
+
+    >>> x = np.array([[1, 2], [3, 4]])
+    >>> np.linalg.trace(x, dtype=float)
+    5.0    
+
     """
     return _core_trace(x, offset, axis1=-2, axis2=-1, dtype=dtype)
 
@@ -3219,6 +3341,31 @@ def matmul(x1, x2, /):
     See Also
     --------
     numpy.matmul
+
+    Examples
+    --------
+
+    Matrix multiplication:
+    >>> np.linalg.matmul([[1, 2], [3, 4]], [[5, 6], [7, 8]])
+    [[19 22],
+    [43 50]]
+
+    Matrix-vector multiplication:
+    >>> np.linalg.matmul([[1, 2], [3, 4]], [5, 6])
+    [17 39]
+
+    Vector-vector multiplication:
+    >>> np.linalg.matmul([1, 2], [3, 4])
+    11
+
+    Matrix-matrix multiplication with 3D arrays:
+    >>> x1 = np.array([[[1, 2], [3, 4]], [[5, 6], [7, 8]]])
+    >>> x2 = np.array([[[9, 10], [11, 12]], [[13, 14], [15, 16]]])
+    >>> np.linalg.matmul(x1, x2)
+    [[[57 64],
+    [79  88]],
+    [[165 184],
+    [197 224]]]
 
     """
     return _core_matmul(x1, x2)
