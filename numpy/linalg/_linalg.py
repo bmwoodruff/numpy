@@ -876,6 +876,27 @@ def outer(x1, x2, /):
     --------
     outer
 
+    Examples
+    --------
+
+    Simple outer product:
+
+    >>> a = np.array([1, 2, 3])
+    >>> b = np.array([4, 5, 6])
+    >>> np.linalg.outer(a, b)
+    array([[ 4,  5,  6],
+           [ 8, 10, 12],
+           [12, 15, 18]])
+
+    Outer product with negative numbers:
+
+    >>> a = np.array([-1, 2, 3])
+    >>> b = np.array([4, -5, 6])
+    >>> np.linalg.outer(a, b)
+    array([[ -4,   5,  -6],
+           [  8, -10,  12],
+           [ 12, -15,  18]])
+
     """
     x1 = asanyarray(x1)
     x2 = asanyarray(x2)
@@ -1436,6 +1457,20 @@ def eig(a):
     array([[1., 0.],
            [0., 1.]])
 
+    Be careful when the matrix has repeated eigenvalues.
+
+    >>> A = np.array([[2, 1], [0, 2]])
+    >>> eigenvalues, eigenvectors = np.linalg.eig(A)
+    >>> eigenvalues
+    array([2., 2.])
+    >>> eigenvectors
+    array([[ 1.0000000e+00, -1.0000000e+00],
+           [ 0.0000000e+00,  4.4408921e-16]])
+    >>> A @ eigenvectors[:,0]
+    array([2., 0.])
+    >>> A @ eigenvectors[:,1]
+    array([-2.0000000e+00,  8.8817842e-16])
+
     """
     a, wrap = _makearray(a)
     _assert_stacked_2d(a)
@@ -1755,6 +1790,16 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
     >>> np.allclose(b, np.matmul(U, S[..., None] * Vh))
     True
 
+    Using hermitian flag and illustrating @ for matrix multiplication:
+
+    >>> a = rng.normal(size=(9, 9)) + 1j*rng.normal(size=(9, 9))
+    >>> herm = a.T.conj() @ a
+    >>> U, S, Vh = np.linalg.svd(herm, hermitian=True)
+    >>> U.shape, S.shape, Vh.shape
+    ((9, 9), (9,), (9, 9))
+    >>> np.allclose(herm, U @ np.diag(S) @ Vh)
+    True
+
     """
     import numpy as _nx
     a, wrap = _makearray(a)
@@ -1851,6 +1896,30 @@ def svdvals(x, /):
     See Also
     --------
     scipy.linalg.svdvals : Compute singular values of a matrix.
+
+    Examples
+    --------
+    Single matrix singular values:
+
+    >>> rng = np.random.default_rng()
+    >>> x = rng.random(size=(3, 3))
+    >>> s = np.linalg.svdvals(x)
+    >>> s.shape
+    (3,)
+
+    Multiple matrix singular values:
+
+    >>> x = rng.random(size=(2, 3, 3))
+    >>> s = np.linalg.svdvals(x)
+    >>> s.shape
+    (2, 3)
+
+    Real matrix singular values:
+
+    >>> x = np.array([[1, 0, 0], [0, 2, 0], [0, 0, 3]])
+    >>> s = np.linalg.svdvals(x)
+    >>> s
+    array([3., 2., 1.])
 
     """
     return svd(x, compute_uv=False, hermitian=False)
@@ -2082,6 +2151,13 @@ def matrix_rank(A, tol=None, hermitian=False, *, rtol=None):
     1
     >>> matrix_rank(np.zeros((4,)))
     0
+
+    Matrix with complex numbers:
+
+    >>> A = np.array([[1+1j, 2+2j], [3+3j, 4+4j]])
+    >>> matrix_rank(A)
+    2
+
     """
     if rtol is not None and tol is not None:
         raise ValueError("`tol` and `rtol` can't be both set.")
@@ -3126,6 +3202,33 @@ def trace(x, /, *, offset=0, dtype=None):
     --------
     numpy.trace
 
+    Examples
+    --------
+    Computing the main diagonal trace:
+
+    >>> x = np.array([[1, 2], [3, 4]])
+    >>> np.linalg.trace(x)
+    5
+
+    Computing the trace of a stack of matrices:
+
+    >>> x = np.array([[[1, 2], [3, 4]], [[5, 6], [7, 8]]])
+    >>> np.linalg.trace(x)
+    array([5, 13])
+
+    Computing the trace of a 3D array:
+
+    >>> x = np.arange(16).reshape((2,2,2,2))
+    >>> np.linalg.trace(x)
+    array([[ 3, 11],
+           [19, 27]])
+
+    Computing the trace with a specific data type:
+
+    >>> x = np.array([[1, 2], [3, 4]])
+    >>> np.linalg.trace(x, dtype=float)
+    np.float64(5.0)
+
     """
     return _core_trace(x, offset, axis1=-2, axis2=-1, dtype=dtype)
 
@@ -3219,6 +3322,35 @@ def matmul(x1, x2, /):
     See Also
     --------
     numpy.matmul
+
+    Examples
+    --------
+
+    Matrix multiplication:
+
+    >>> np.linalg.matmul([[1, 2], [3, 4]], [[5, 6], [7, 8]])
+    array([[19, 22],
+           [43, 50]])
+
+    Matrix-vector multiplication:
+
+    >>> np.linalg.matmul([[1, 2], [3, 4]], [5, 6])
+    array([17, 39])
+
+    Vector-vector multiplication:
+
+    >>> np.linalg.matmul([1, 2], [3, 4])
+    11
+
+    Matrix-matrix multiplication with 3D arrays:
+
+    >>> x1 = np.array([[[1, 2], [3, 4]], [[5, 6], [7, 8]]])
+    >>> x2 = np.array([[[9, 10], [11, 12]], [[13, 14], [15, 16]]])
+    >>> np.linalg.matmul(x1, x2)
+    array([[[ 31,  34],
+            [ 71,  78]],
+           [[155, 166],
+            [211, 226]]])
 
     """
     return _core_matmul(x1, x2)
@@ -3396,6 +3528,30 @@ def vecdot(x1, x2, /, *, axis=-1):
     See Also
     --------
     numpy.vecdot
+
+    Examples
+    --------
+
+    Dot product of two 1-D arrays:
+
+    >>> a = np.array([1, 2, 3])
+    >>> b = np.array([4, 5, 6])
+    >>> np.linalg.vecdot(a, b)
+    32
+
+    Dot product of two 2-D arrays along the last axis:
+
+    >>> a = np.array([[1, 2], [3, 4]])
+    >>> b = np.array([[5, 6], [7, 8]])
+    >>> np.linalg.vecdot(a, b, axis=-1)
+    array([17, 53])
+
+    Dot product of two complex vectors:
+
+    >>> a = np.array([1 + 2j, 3 + 4j])
+    >>> b = np.array([5 + 6j, 7 + 8j])
+    >>> np.linalg.vecdot(a, b)
+    70-8j
 
     """
     return _core_vecdot(x1, x2, axis=axis)
