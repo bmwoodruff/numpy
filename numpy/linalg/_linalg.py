@@ -3540,5 +3540,29 @@ def vecdot(x1, x2, /, *, axis=-1):
     --------
     numpy.vecdot
 
+    Examples
+    --------
+
+    Dot product of two 1-D arrays:
+
+    >>> a = np.array([1, 2, 3])
+    >>> b = np.array([4, 5, 6])
+    >>> np.linalg.vecdot(a, b)
+    32
+
+    Dot product of two 2-D arrays along the last axis:
+
+    >>> a = np.array([[1, 2], [3, 4]])
+    >>> b = np.array([[5, 6], [7, 8]])
+    >>> np.linalg.vecdot(a, b, axis=-1)
+    array([17, 53])
+
+    Dot product of two complex vectors:
+
+    >>> a = np.array([1 + 2j, 3 + 4j])
+    >>> b = np.array([5 + 6j, 7 + 8j])
+    >>> np.linalg.vecdot(a, b)
+    70-8j
+
     """
     return _core_vecdot(x1, x2, axis=axis)
