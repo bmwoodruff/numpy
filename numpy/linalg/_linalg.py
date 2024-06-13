@@ -1925,7 +1925,7 @@ def svdvals(x, /):
     >>> s = np.linalg.svdvals(x)
     >>> s
     array([3., 2., 1.])
-    
+
     """
     return svd(x, compute_uv=False, hermitian=False)
 
