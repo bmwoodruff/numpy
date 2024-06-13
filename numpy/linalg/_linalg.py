@@ -3338,26 +3338,30 @@ def matmul(x1, x2, /):
     --------
 
     Matrix multiplication:
+
     >>> np.linalg.matmul([[1, 2], [3, 4]], [[5, 6], [7, 8]])
-    [[19 22],
-    [43 50]]
+    array([[19, 22],
+           [43, 50]])
 
     Matrix-vector multiplication:
+
     >>> np.linalg.matmul([[1, 2], [3, 4]], [5, 6])
-    [17 39]
+    array([17, 39])
 
     Vector-vector multiplication:
+
     >>> np.linalg.matmul([1, 2], [3, 4])
     11
 
     Matrix-matrix multiplication with 3D arrays:
+
     >>> x1 = np.array([[[1, 2], [3, 4]], [[5, 6], [7, 8]]])
     >>> x2 = np.array([[[9, 10], [11, 12]], [[13, 14], [15, 16]]])
     >>> np.linalg.matmul(x1, x2)
-    [[[57 64],
-    [79  88]],
-    [[165 184],
-    [197 224]]]
+    array([[[ 31,  34],
+            [ 71,  78]],
+           [[155, 166],
+            [211, 226]]])
 
     """
     return _core_matmul(x1, x2)
