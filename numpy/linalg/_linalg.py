@@ -2993,15 +2993,6 @@ def multi_dot(arrays, *, out=None):
     >>> # or
     >>> _ = A.dot(B).dot(C).dot(D)
 
-    Using multi_dot with 1-D arrays:
-
-    >>> a = np.random.random((10,))
-    >>> b = np.random.random((10,))
-    >>> c = np.random.random((10,))
-    >>> d = np.random.random((10,))
-    >>>
-    >>> _ = multi_dot([a, b, c, d])
-
     Notes
     -----
     The cost for a matrix multiplication can be calculated with the
