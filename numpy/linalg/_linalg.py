@@ -3231,13 +3231,14 @@ def trace(x, /, *, offset=0, dtype=None):
 
     >>> x = np.array([[[[1, 2], [3, 4]], [[5, 6], [7, 8]]], [[[9, 10], [11, 12]], [[13, 14], [15, 16]]]])
     >>> np.linalg.trace(x)
-    array([[ 5, 13], [29, 41]])
+    array([[ 5, 13],
+           [21, 29]])
 
     Computing the trace with a specific data type:
 
     >>> x = np.array([[1, 2], [3, 4]])
     >>> np.linalg.trace(x, dtype=float)
-    5.0    
+    np.float64(5.0)
 
     """
     return _core_trace(x, offset, axis1=-2, axis2=-1, dtype=dtype)
