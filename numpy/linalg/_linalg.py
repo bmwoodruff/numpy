@@ -2148,20 +2148,20 @@ def matrix_rank(A, tol=None, hermitian=False, *, rtol=None):
     --------
     >>> from numpy.linalg import matrix_rank
     >>> matrix_rank(np.eye(4)) # Full rank matrix
-    4
+    np.int64(4)
     >>> I=np.eye(4); I[-1,-1] = 0. # rank deficient matrix
     >>> matrix_rank(I)
-    3
+    np.int64(3)
     >>> matrix_rank(np.ones((4,))) # 1 dimension - rank 1 unless all 0
     1
     >>> matrix_rank(np.zeros((4,)))
     0
-    
+
     Matrix with complex numbers:
-    
+
     >>> A = np.array([[1+1j, 2+2j], [3+3j, 4+4j]])
     >>> matrix_rank(A)
-    2
+    np.int64(2)
 
     """
     if rtol is not None and tol is not None:
