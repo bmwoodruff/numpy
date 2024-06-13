@@ -2440,7 +2440,7 @@ def det(a):
 
     >>> a = np.array([[1, 2], [3, 4]])
     >>> np.linalg.det(a)
-    -2.0 # may vary
+    np.float64(-2.0000000000000004) # may vary
 
     Computing determinants for a stack of matrices:
 
@@ -2454,8 +2454,8 @@ def det(a):
 
     >>> a = np.array([[1, 0], [0, 0]])
     >>> np.linalg.det(a)
-    0.0 # may vary
-    
+    np.float64(0.0) # may vary
+
     """
     a = asarray(a)
     _assert_stacked_2d(a)
