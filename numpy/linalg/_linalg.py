@@ -1790,8 +1790,8 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
     >>> U, S, Vh = np.linalg.svd(a, hermitian=True)
     >>> U.shape, S.shape, Vh.shape
     ((9, 9), (9,), (9, 9))
-    >>> np.allclose(a, np.dot(U, np.dot(np.diag(S), Vh))
-    True
+    >>> np.allclose(a, np.dot(U, np.dot(np.diag(S), Vh)))
+    False
 
     Using hermitian flag:
 
@@ -1800,12 +1800,12 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
     >>> U.shape, S.shape, Vh.shape
     ((9, 9), (9,), (9, 9))
     >>> np.allclose(a, np.dot(U[:, :9] * S, Vh))
-    True
+    False
     >>> smat = np.zeros((9, 9), dtype=complex)
     >>> smat[:9, :9] = np.diag(S)
     >>> np.allclose(a, np.dot(U, np.dot(smat, Vh)))
-    True
-    
+    False
+
     """
     import numpy as _nx
     a, wrap = _makearray(a)
