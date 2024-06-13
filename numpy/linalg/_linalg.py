@@ -1457,14 +1457,20 @@ def eig(a):
     array([[1., 0.],
            [0., 1.]])
 
-    Matrix with repeated eigenvalues.
+    Be careful when the matrix has repeated eigenvalues.
 
-    >>> eigenvalues, eigenvectors = np.linalg.eig(np.array([[2, 1], [1, 1]]))
+    >>> A = np.array([[2, 1], [0, 2]])
+    >>> eigenvalues, eigenvectors = np.linalg.eig(A)
     >>> eigenvalues
-    array([2.61803399, 0.38196601])
+    array([2., 2.])
     >>> eigenvectors
-    array([[ 0.85065081, -0.52573111],
-           [ 0.52573111,  0.85065081]])
+    array([[ 1.0000000e+00, -1.0000000e+00],
+           [ 0.0000000e+00,  4.4408921e-16]])
+    >>> A @ eigenvectors[:,0]
+    array([2., 0.])
+    >>> A @ eigenvectors[:,1]
+    array([-2.0000000e+00,  8.8817842e-16])
+
     """
     a, wrap = _makearray(a)
     _assert_stacked_2d(a)
@@ -1784,27 +1790,15 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
     >>> np.allclose(b, np.matmul(U, S[..., None] * Vh))
     True
 
-    Using hermitian flag:
+    Using hermitian flag and illustrating @ for matrix multiplication:
 
     >>> a = rng.normal(size=(9, 9)) + 1j*rng.normal(size=(9, 9))
-    >>> U, S, Vh = np.linalg.svd(a, hermitian=True)
+    >>> herm = a.T.conj() @ a
+    >>> U, S, Vh = np.linalg.svd(herm, hermitian=True)
     >>> U.shape, S.shape, Vh.shape
     ((9, 9), (9,), (9, 9))
-    >>> np.allclose(a, np.dot(U, np.dot(np.diag(S), Vh)))
-    False
-
-    Using hermitian flag:
-
-    >>> a = rng.normal(size=(9, 9)) + 1j*rng.normal(size=(9, 9))
-    >>> U, S, Vh = np.linalg.svd(a, hermitian=True)
-    >>> U.shape, S.shape, Vh.shape
-    ((9, 9), (9,), (9, 9))
-    >>> np.allclose(a, np.dot(U[:, :9] * S, Vh))
-    False
-    >>> smat = np.zeros((9, 9), dtype=complex)
-    >>> smat[:9, :9] = np.diag(S)
-    >>> np.allclose(a, np.dot(U, np.dot(smat, Vh)))
-    False
+    >>> np.allclose(herm, U @ np.diag(S) @ Vh)
+    True
 
     """
     import numpy as _nx
@@ -1907,14 +1901,15 @@ def svdvals(x, /):
     --------
     Single matrix singular values:
 
-    >>> x = np.random.rand(3, 3)
+    >>> rng = np.random.default_rng()
+    >>> x = rng.random(size=(3, 3))
     >>> s = np.linalg.svdvals(x)
     >>> s.shape
     (3,)
 
     Multiple matrix singular values:
 
-    >>> x = np.random.rand(2, 3, 3)
+    >>> x = rng.random(size=(2, 3, 3))
     >>> s = np.linalg.svdvals(x)
     >>> s.shape
     (2, 3)
@@ -2148,10 +2143,10 @@ def matrix_rank(A, tol=None, hermitian=False, *, rtol=None):
     --------
     >>> from numpy.linalg import matrix_rank
     >>> matrix_rank(np.eye(4)) # Full rank matrix
-    np.int64(4)
+    4
     >>> I=np.eye(4); I[-1,-1] = 0. # rank deficient matrix
     >>> matrix_rank(I)
-    np.int64(3)
+    3
     >>> matrix_rank(np.ones((4,))) # 1 dimension - rank 1 unless all 0
     1
     >>> matrix_rank(np.zeros((4,)))
@@ -2161,7 +2156,7 @@ def matrix_rank(A, tol=None, hermitian=False, *, rtol=None):
 
     >>> A = np.array([[1+1j, 2+2j], [3+3j, 4+4j]])
     >>> matrix_rank(A)
-    np.int64(2)
+    2
 
     """
     if rtol is not None and tol is not None:
@@ -2440,7 +2435,7 @@ def det(a):
 
     >>> a = np.array([[1, 2], [3, 4]])
     >>> np.linalg.det(a)
-    np.float64(-2.0000000000000004) # may vary
+    -2.0 # may vary
 
     Computing determinants for a stack of matrices:
 
@@ -2449,12 +2444,6 @@ def det(a):
     (3, 2, 2)
     >>> np.linalg.det(a)
     array([-2., -3., -8.])
-
-    Zero determinant for a singular matrix:
-
-    >>> a = np.array([[1, 0], [0, 0]])
-    >>> np.linalg.det(a)
-    np.float64(0.0) # may vary
 
     """
     a = asarray(a)
@@ -3229,10 +3218,10 @@ def trace(x, /, *, offset=0, dtype=None):
 
     Computing the trace of a 3D array:
 
-    >>> x = np.array([[[[1, 2], [3, 4]], [[5, 6], [7, 8]]], [[[9, 10], [11, 12]], [[13, 14], [15, 16]]]])
+    >>> x = np.arange(16).reshape((2,2,2,2))
     >>> np.linalg.trace(x)
-    array([[ 5, 13],
-           [21, 29]])
+    array([[ 3, 11],
+           [19, 27]])
 
     Computing the trace with a specific data type:
 
