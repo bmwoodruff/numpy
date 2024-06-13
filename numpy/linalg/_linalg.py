@@ -1461,11 +1461,10 @@ def eig(a):
 
     >>> eigenvalues, eigenvectors = np.linalg.eig(np.array([[2, 1], [1, 1]]))
     >>> eigenvalues
-    array([2., 1.])
+    array([2.61803399, 0.38196601])
     >>> eigenvectors
-    array([[0.70710678, 0.70710678],
-        [0.70710678, -0.70710678]])
-           
+    array([[ 0.85065081, -0.52573111],
+           [ 0.52573111,  0.85065081]])
     """
     a, wrap = _makearray(a)
     _assert_stacked_2d(a)
