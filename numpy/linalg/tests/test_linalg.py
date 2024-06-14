@@ -8,6 +8,7 @@ import traceback
 import textwrap
 import subprocess
 import pytest
+from hypothesis import given, strategies as st
 
 import numpy as np
 from numpy import array, single, double, csingle, cdouble, dot, identity, matmul
@@ -2324,14 +2325,17 @@ class TestCross2d:
 
         assert_equal(actual, expected)
 
-    def test_2x2_anticommutativity(self):
-        u = [1, 2]
-        v = [3, 4]
-        z = -2
-        cp = np.linalg.cross2d(u, v)
-        assert_equal(cp, z)
-        cp = np.linalg.cross2d(v, u)
-        assert_equal(cp, -z)
+    @given(
+        st.lists(
+            st.one_of(st.integers(-10**9, 10**9), st.floats()), min_length=4, max_length=4
+        )
+    )
+    def test_2x2_anticommutativity(self, concatenated_vectors):
+        u = concatenated_vectors[:2]
+        v = concatenated_vectors[2:]
+        forward = np.linalg.cross2d(u, v)
+        reverse = np.linalg.cross2d(v, u)
+        assert_equal(forward, -reverse)
 
     def test_broadcasting(self):
         # Ticket #2624 (Trac #2032)
