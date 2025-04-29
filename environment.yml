@@ -7,7 +7,7 @@ name: numpy-dev
 channels:
   - conda-forge
 dependencies:
-  - python=3.12  # need to pin to avoid issues with builds
+  - python=3.11  # changed to 3.11 so loads in codespaces
   - cython>=3.0
   - compilers
   - openblas
